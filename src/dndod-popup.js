@@ -6,6 +6,8 @@ const originalOptions = Object.freeze({
     "animation": "from-top", // from-top, from-bottom, none
     "animationDuration": 250,
     "disableCloseBtn": false,
+    "disableCloseWithEsc": false,
+    "disableCloseWithOverlay": false,
     "disableOutline": false,
     "enableHTML": false,
     "events": {
@@ -77,20 +79,26 @@ class Popup {
 
         $wrapper.setAttribute("tabindex", "0");
 
-        $wrapper.dndodKeydownHandler = (e) => {
-            e.stopPropagation();
-            if (e.keyCode === 27) {
+        if (!this.options.disableCloseWithEsc) {
+            $wrapper.dndodKeydownHandler = (e) => {
+                e.stopPropagation();
+                if (e.keyCode === 27) {
+                    this.close();
+                }
+            }
+
+            $wrapper.addEventListener("keydown", $wrapper.dndodKeydownHandler);
+        }
+
+        if (!this.options.disableCloseWithOverlay) {
+            $wrapper.dndodClickHandler = (e) => {
+                e.stopPropagation();
                 this.close();
             }
+
+            $wrapper.addEventListener("click", $wrapper.dndodClickHandler);
         }
 
-        $wrapper.dndodClickHandler = (e) => {
-            e.stopPropagation();
-            this.close();
-        }
-
-        $wrapper.addEventListener("keydown", $wrapper.dndodKeydownHandler);
-        $wrapper.addEventListener("click", $wrapper.dndodClickHandler);
         return $wrapper;
     }
 
